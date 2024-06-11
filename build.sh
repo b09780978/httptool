@@ -7,4 +7,4 @@ GOOS=linux GOARCH=amd64 go build -v -ldflags '-extldflags "-static"' -o bin/linu
 GOOS=windows GOARCH=amd64 go build -v -ldflags '-extldflags "-static"' -o bin/windows/${BIN}.exe ${TARGET} && echo "${TIME}: build httptool for windows 64bits on bin/windows/${BIN}.exe"
 
 echo "Run ${BIN}:"
-./bin/linux/${BIN}
+./bin/linux/${BIN} --method GET --url "https://httpbin.org/get"
