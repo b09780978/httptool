@@ -38,18 +38,16 @@ type HttpClient struct {
 	Cookies   map[string]string
 }
 
-var DefaultClient = &HttpClient{
-	Client:    &http.Client{},
-	UserAgent: Chrome,
-}
-
 func New() *HttpClient {
 	return &HttpClient{
 		Client:    &http.Client{},
 		UserAgent: Chrome,
 		Cookies:   map[string]string{},
+		Header:    http.Header{},
 	}
 }
+
+var DefaultClient = New()
 
 // Header
 func (c *HttpClient) SetHeader(k, v string) {
