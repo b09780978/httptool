@@ -60,6 +60,10 @@ func (c *HttpClient) AddHeader(k, v string) {
 	c.Header.Add(k, v)
 }
 
+func (c *HttpClient) AddFakeUserAgent() {
+	c.SetHeader("User-Agent", c.UserAgent)
+}
+
 func (c *HttpClient) CloneHeader(k, v string) http.Header {
 	return c.Header.Clone()
 }
