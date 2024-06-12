@@ -34,49 +34,81 @@ func NewPostData() url.Values {
 type HttpClient struct {
 	Client    *http.Client
 	UserAgent string
-	Header    http.Header
+	Header    map[string][]string
 	Cookies   map[string]string
 }
 
-func New() *HttpClient {
+func NewClient() *HttpClient {
 	return &HttpClient{
 		Client:    &http.Client{},
 		UserAgent: Chrome,
 		Cookies:   map[string]string{},
-		Header:    http.Header{},
+		Header:    map[string][]string{},
 	}
 }
 
-var DefaultClient = New()
+var DefaultClient = NewClient()
 
 // Header
 func (c *HttpClient) SetHeader(k, v string) {
-	c.Header.Set(k, v)
+	k = strings.ToLower(k)
+	if _, ok := c.Header[k]; ok {
+		c.Header[k] = append(c.Header[k], v)
+	}
+	c.Header[k] = make([]string, 1)
+	c.Header[k][0] = v
 }
 
 func (c *HttpClient) AddHeader(k, v string) {
-	c.Header.Add(k, v)
+	k = strings.ToLower(k)
+	if _, ok := c.Header[k]; ok {
+		c.Header[k] = append(c.Header[k], v)
+	} else {
+		c.SetHeader(k, v)
+	}
 }
 
 func (c *HttpClient) AddFakeUserAgent() {
 	c.SetHeader("User-Agent", c.UserAgent)
 }
 
-func (c *HttpClient) CloneHeader(k, v string) http.Header {
-	return c.Header.Clone()
+func (c *HttpClient) CloneHeader(k, v string) map[string][]string {
+	header := make(map[string][]string)
+	for k, v := range c.Header {
+		header[k] = v
+	}
+	return header
 }
 
 func (c *HttpClient) DelHeader(k string) {
-	c.Header.Del(k)
+	k = strings.ToLower(k)
+	delete(c.Header, k)
 }
 
-func (c *HttpClient) GetHeader(k string) string {
-	return c.Header.Get(k)
+func (c *HttpClient) GetHeader(k string) ([]string, bool) {
+	k = strings.ToLower(k)
+	if val, ok := c.Header[k]; ok {
+		return val, ok
+	} else {
+		return make([]string, 0), ok
+	}
 }
 
 // Cookie
 func (c *HttpClient) SetCookie(k, v string) {
 	c.Cookies[k] = v
+}
+
+func (c *HttpClient) GetCookie(k string) (string, bool) {
+	if val, ok := c.Cookies[k]; ok {
+		return val, ok
+	} else {
+		return "", ok
+	}
+}
+
+func (c *HttpClient) DelCookie(k string) {
+	delete(c.Cookies, k)
 }
 
 // when NewRequest add custom header
