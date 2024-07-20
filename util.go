@@ -31,14 +31,13 @@ func ReadRespStr(resp *http.Response) (string, error) {
 // parse cookies
 func ParseCookies(resp *http.Response) []*http.Cookie {
 	header := http.Header{}
-	empty := []*http.Cookie{}
 
 	if cookie, ok := resp.Header["Set-Cookie"]; ok {
 		for _, v := range cookie {
 			header.Add("Cookie", v)
 		}
 	} else {
-		return empty
+		return []*http.Cookie{}
 	}
 
 	req := http.Request{Header: header}
